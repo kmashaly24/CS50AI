@@ -62,8 +62,8 @@ knowledge3 = And(
     Not(And(CKnight, CKnave)),  # C cannot be both a knight and a knave
     Implication(AKnight, Or(AKnight, AKnave)),  # If A is a knight, then his statement is true
     Implication(AKnave, And(AKnight, AKnave)),  # If A is a knave, then his statement is false
-    Implication(BKnight, Or(Implication(AKnight, AKnave), Implication(AKnave, AKnave))),  # If B is a knight, then his statement is true
-    Implication(BKnave, And(Implication(AKnight, AKnight), Implication(AKnave, AKnight))),  # If B is a knave, then his statement is false
+    Implication(BKnight, Or(Implication(AKnight, AKnave), Implication(AKnave, AKnight))),  # If B is a knight, then his statement is true
+    Implication(BKnave, Or(Implication(AKnight, AKnight), Implication(AKnave, AKnave))),  # If B is a knave, then his statement is false
     Implication(BKnight, CKnave),  # If B is a knight, then his statement is true
     Implication(BKnave, CKnight),  # If B is a knave, then his statement is false
     Implication(CKnight, AKnight),  # If C is a knight, then his statement is true
