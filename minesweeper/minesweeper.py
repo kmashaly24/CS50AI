@@ -194,65 +194,56 @@ class MinesweeperAI():
             5) add any new sentences to the AI's knowledge base
                if they can be inferred from existing knowledge
         """
-        def UpdateKnowledgeBase(new_sentence):
-            if new_sentence not in self.knowledge:
-                self.knowledge.append(new_sentence)
-                for sentence in self.knowledge:
-                    safes = sentence.known_safes()
-                    mines = sentence.known_mines()
-                    if safes:
-                        for safe in safes:
-                            self.mark_safe(safe)
-                    if mines:
-                        for mine in mines:
-                            self.mark_mine(mine)
-            self.knowledge[:] = [s for s in self.knowledge if s.cells]
-
         self.moves_made.add(cell)
-
         self.mark_safe(cell)
 
-        new_sentence = Sentence(cell, count)
-        UpdateKnowledgeBase(new_sentence)
-
-        
-        new_cells = set()
+        neighbors = set()
         for i in range(cell[0] - 1, cell[0] + 2):
             for j in range(cell[1] - 1, cell[1] + 2):
-
-                # Ignore the cell itself
-                if (i, j) == cell or (i, j) in self.safes or (i, j) in self.mines:
+                if (i, j) == cell:
                     continue
-                else:
-                    if 0 <= i < self.height and 0 <= j < self.width:
-                        new_cells.add((i, j))
-        new_sentence = Sentence(new_cells, count)
-        UpdateKnowledgeBase(new_sentence)
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    if (i, j) not in self.safes and (i, j) not in self.mines:
+                        neighbors.add((i, j))
+                    elif (i, j) in self.mines:
+                        count -= 1
 
+        new_sentence = Sentence(neighbors, count)
+        if new_sentence not in self.knowledge:
+            self.knowledge.append(new_sentence)
 
-        def infer_new_sentences():
-            """
-            Adds any new sentences to the AI's knowledge base
-            if they can be inferred from existing knowledge
-    """ 
-            for sentence1, sentence2 in itertools.combinations(self.knowledge, 2):
-                if sentence1.cells.issubset(sentence2.cells):
+        for sentence in self.knowledge:
+            for mine in sentence.known_mines():
+                self.mark_mine(mine)
+            for safe in sentence.known_safes():
+                self.mark_safe(safe)
+
+        knowledge_copy = self.knowledge.copy()
+        for sentence1 in knowledge_copy:
+            for sentence2 in knowledge_copy:
+                if sentence1 != sentence2 and sentence1.cells.issubset(sentence2.cells):
                     new_cells = sentence2.cells - sentence1.cells
                     new_count = sentence2.count - sentence1.count
                     new_sentence = Sentence(new_cells, new_count)
-                    UpdateKnowledgeBase(new_sentence)
-
-                elif sentence2.cells.issubset(sentence1.cells):
-                    new_cells = sentence1.cells - sentence2.cells
-                    new_count = sentence1.count - sentence2.count
-                    new_sentence = Sentence(new_cells, new_count)
-                    UpdateKnowledgeBase(new_sentence)
+                    if new_sentence not in self.knowledge:
+                        self.knowledge.append(new_sentence)
 
         while True:
-            knowledge_before = self.knowledge.copy()
-            infer_new_sentences()
-            if knowledge_before == self.knowledge:
-                break  
+            mines_found = set()
+            safes_found = set()
+            for sentence in self.knowledge:
+                for mine in sentence.known_mines():
+                    mines_found.add(mine)
+                for safe in sentence.known_safes():
+                    safes_found.add(safe)
+
+            if len(mines_found) == 0 and len(safes_found) == 0:
+                break
+
+            for mine in mines_found:
+                self.mark_mine(mine)
+            for safe in safes_found:
+                self.mark_safe(safe)
     def make_safe_move(self):
         """
         Returns a safe cell to choose on the Minesweeper board.
@@ -284,6 +275,3 @@ class MinesweeperAI():
                     return cell 
             else:
                 None
-
-
-
