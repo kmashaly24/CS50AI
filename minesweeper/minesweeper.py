@@ -105,23 +105,22 @@ class Sentence():
         """
         Returns the set of all cells in self.cells known to be mines.
         """
-        known_mine = set()
-        for mine in MinesweeperAI().mines:
-            if mine in self.cells:
-                known_mine.add(mine)
-
-        return known_mine
+        Known_mines = set()
+        if len(self.cells) == self.count and self.count != 0:
+            for mine in self.cells:
+                Known_mines.add(mine)
+        return Known_mines
 
 
     def known_safes(self):
         """
         Returns the set of all cells in self.cells known to be safe.
         """
-        Known_safe = set()
-        for safe in MinesweeperAI().safes:
-            if safe in self.cells:
-                Known_safe.add(safe)
-        return Known_safe
+        Known_safes = set()
+        if self.count == 0:
+            for safe in self.cells:
+                Known_safes.add(safe)
+        return Known_safes
 
     def mark_mine(self, cell):
         """
