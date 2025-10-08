@@ -225,6 +225,7 @@ class MinesweeperAI():
 
 
 
+
     def make_safe_move(self):
         """
         Returns a safe cell to choose on the Minesweeper board.
@@ -248,9 +249,11 @@ class MinesweeperAI():
             2) are not known to be mines
         """
         if not self.make_safe_move():
-            all_cells = set(itertools.product(range(self.height), range(self.width)))
-            possible_moves = list(all_cells - self.moves_made - self.mines)
-            if possible_moves:
-                return random.choice(possible_moves)
+            while True:
+                i = random.randrange(self.height)
+                j = random.randrange(self.width)
+                cell = (i, j)
+                if cell not in self.moves_made and cell not in self.mines:
+                    return cell 
             else:
                 None
