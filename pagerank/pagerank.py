@@ -2,6 +2,7 @@ import os
 import random
 import re
 import sys
+from random import choices, choice
 
 DAMPING = 0.85
 SAMPLES = 10000
@@ -49,27 +50,19 @@ def transition_model(corpus, page, damping_factor):
 
     The return value is a dictionary mapping page names to probabilities.
     """
-    N = len(corpus)
-    probabilities = {}
-    random_jump_prob = (1 - damping_factor) / N
-    links_from_page = corpus[page]
-    num_links = len(links_from_page)
-    
-    if num_links == 0:
-        for p in corpus:
-            probabilities[p] = 1 / N
-        return probabilities
+    links = corpus[page]
+    prob_distribution = {}
+    if links:
+        for p in corpus.keys():
+            if p in links:
+                prob_distribution[p] = (((1 - damping_factor) / len(corpus)) + (damping_factor / len(links)))
+            else:
+                prob_distribution[p] = (1 - damping_factor) / len(corpus)
+    else:
+        for p in corpus.keys():
+            prob_distribution[p] = 1 / len(corpus)
 
-    link_follow_prob_per_link = damping_factor / num_links
-
-    for next_page in corpus:
-        prob = random_jump_prob
-        if next_page in links_from_page:
-            prob += link_follow_prob_per_link
-        
-        probabilities[next_page] = prob  
-    return probabilities
-
+    return prob_distribution
 
 def sample_pagerank(corpus, damping_factor, n):
     """
@@ -78,24 +71,16 @@ def sample_pagerank(corpus, damping_factor, n):
 
     The proportion of samples for each page is its PageRank estimate.
     """
-    all_pages = list(corpus.keys())
-    page_counts = {page: 0 for page in all_pages}
-    current_page = random.choice(all_pages)
-    page_counts[current_page] += 1
+    start = choice(list(corpus.keys()))
+    counts = {page: 0 for page in corpus.keys()}
+    counts[start] += 1
+    for i in range(n):
+        prob_distribution = transition_model(corpus, start, damping_factor)
+        new = choices(list(prob_distribution.keys()), weights=list(prob_distribution.values()), k=1)[0]
+        counts[new] += 1
+        start = new
 
-    for _ in range(n - 1):
-        model = transition_model(corpus, current_page, damping_factor)
-        pages = list(model.keys())
-        weights = list(model.values())
-        next_page_list = random.choices(pages, weights=weights, k=1)
-        next_page = next_page_list[0]
-
-        page_counts[next_page] += 1
-        current_page = next_page
-
-    pageranks = {page: count / n for page, count in page_counts.items()}
-    return pageranks
-
+    return {page : value / n for page, value in counts.items()}
 
 def iterate_pagerank(corpus, damping_factor):
     """
@@ -104,39 +89,23 @@ def iterate_pagerank(corpus, damping_factor):
     
     The process stops when no PageRank value changes by more than 0.001.
     """
-    N = len(corpus)
-    all_pages = list(corpus.keys())
-    initial_rank = 1 / N
-    current_ranks = {page: initial_rank for page in all_pages}
-    CONVERGENCE_THRESHOLD = 0.001
-
+    page_rank = {key : (1/len(corpus)) for key in corpus.keys()}
+    incomings = {p: set() for p in corpus.keys()}
+    for p, links in corpus.items():
+        for link in links:
+            incomings[link].add(p)
+    random = (1 - damping_factor) / len(corpus)
     while True:
-        new_ranks = {}
-        has_converged = True 
-        links_to = {p: set() for p in all_pages}
-        for i, links in corpus.items():
-            for link in links:
-                links_to[link].add(i)
-        for p in all_pages:
-            random_jump_term = (1 - damping_factor) / N
-            summation_term = 0
-            for i in links_to[p]:
-                num_links_i = len(corpus[i])
-                if num_links_i == 0:
-                    num_links_for_calc = N
-                else:
-                    num_links_for_calc = num_links_i
-                summation_term += current_ranks[i] / num_links_for_calc
-            link_follow_term = damping_factor * summation_term
+        for p in corpus.keys():
+            summing = 0
+            for i in incomings[p]:
+                summing += page_rank[i] / len(corpus[i])
 
-            new_pr_p = random_jump_term + link_follow_term
-            new_ranks[p] = new_pr_p
-            if abs(new_ranks[p] - current_ranks[p]) > CONVERGENCE_THRESHOLD:
-                has_converged = False
-        
-        if has_converged:
-            total_rank = sum(new_ranks.values())
-            normalized_ranks = {p: rank / total_rank for p, rank in new_ranks.items()}
-            return normalized_ranks
-        else:
-            current_ranks = new_ranks
+            new_rank = random + (damping_factor * summing)
+            if abs(new_rank - page_rank[p]) > 0.001:
+                page_rank[p] = new_rank
+            else:
+                return {key : value/sum(page_rank.values()) for key , value in page_rank.items()}
+
+if __name__ == "__main__":
+    main()
