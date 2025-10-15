@@ -3,7 +3,6 @@ import random
 import re
 import sys
 from random import choices, choice
-
 DAMPING = 0.85
 SAMPLES = 10000
 
@@ -96,16 +95,25 @@ def iterate_pagerank(corpus, damping_factor):
             incomings[link].add(p)
     random = (1 - damping_factor) / len(corpus)
     while True:
+        new_page_rank = {}
+        converged = True
         for p in corpus.keys():
             summing = 0
             for i in incomings[p]:
-                summing += page_rank[i] / len(corpus[i])
+                if len(corpus[i]) == 0:
+                    summing += page_rank[i] / len(corpus)
+                else:
+                    summing += page_rank[i] / len(corpus[i])
 
             new_rank = random + (damping_factor * summing)
-            if abs(new_rank - page_rank[p]) > 0.001:
-                page_rank[p] = new_rank
-            else:
-                return {key : value/sum(page_rank.values()) for key , value in page_rank.items()}
+            new_page_rank[p] = new_rank
+
+            if abs(new_page_rank[p] - page_rank[p]) > 0.001:
+                converged = False
+        if converged:
+            return {key : value/sum(page_rank.values()) for key , value in page_rank.items()}
+        else:
+            page_rank = new_page_rank
 
 if __name__ == "__main__":
     main()
