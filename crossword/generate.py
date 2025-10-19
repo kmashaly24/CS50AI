@@ -126,10 +126,10 @@ class CrosswordCreator():
                 if x_word[overlap[0]] == y_word[overlap[1]]:
                     keep.add(x_word)
                     break
-        
-        self.domains[x] = keep
+
         if len(keep) < len(self.domains[x]):
             revised = True
+        self.domains[x] = keep
 
         return revised
 
@@ -222,7 +222,7 @@ class CrosswordCreator():
         for var in self.crossword.variables:
             if var not in assignment:
                 all_vars[var] = (len(self.domains[var]), len(self.crossword.neighbors(var)))
-        sorted_vars = sorted(all_vars.items(), key=lambda item: item[1], reverse=True)
+        sorted_vars = sorted(all_vars.items(), key=lambda item: (item[1][0], -item[1][1]))
         return sorted_vars[0][0]
 
     def backtrack(self, assignment):
