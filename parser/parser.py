@@ -37,6 +37,30 @@ VP -> V
 VP -> V P NP
 VP -> V NP Adv
 VP -> V P VP
+VP -> V P NP Adv
+VP -> V NP P VP
+VP -> V P NP P NP
+VP -> V NP NP
+VP -> V P NP P VP
+VP -> V NP P NP Adv
+VP -> V P VP
+VP -> V P NP NP
+VP -> V NP P VP Adv
+VP -> V P NP P NP Adv
+VP -> V NP NP Adv
+VP -> V P VP Adv
+VP -> V NP NP P NP
+VP -> V P NP NP Adv
+VP -> V NP P NP P NP
+VP -> V NP NP P VP
+VP -> V NP P NP P NP Adv
+VP -> V NP NP P NP Adv
+VP -> V NP NP P VP Adv
+VP -> V NP P VP Adv
+VP -> V NP NP P NP P NP Adv
+VP -> V NP NP P VP P NP
+VP -> V NP P NP P VP Adv
+VP -> V NP NP P VP P NP
 """
 
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
