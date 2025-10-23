@@ -15,52 +15,20 @@ V -> "smiled" | "tell" | "were"
 """
 
 NONTERMINALS = """
-S -> N V
+S -> NP VP
 S -> S Conj S
-S -> Adv S
-S -> S P S
 NP -> N
 NP -> Det N
-NP -> Adj NP
-NP -> Det Adj NP
-VP -> V NP
-VP -> V NP P NP
-VP -> V Adv VP     
-VP -> V S
-VP -> VP Adv
-VP -> VP P VP
-VP -> VP Conj VP     
-NP -> NP P NP
-VP -> VP NP
-VP -> Adv VP
+NP -> Det AP N
+NP -> NP PP
 VP -> V
-VP -> V P NP
-VP -> V NP Adv
-VP -> V P VP
-VP -> V P NP Adv
-VP -> V NP P VP
-VP -> V P NP P NP
-VP -> V NP NP
-VP -> V P NP P VP
-VP -> V NP P NP Adv
-VP -> V P VP
-VP -> V P NP NP
-VP -> V NP P VP Adv
-VP -> V P NP P NP Adv
-VP -> V NP NP Adv
-VP -> V P VP Adv
-VP -> V NP NP P NP
-VP -> V P NP NP Adv
-VP -> V NP P NP P NP
-VP -> V NP NP P VP
-VP -> V NP P NP P NP Adv
-VP -> V NP NP P NP Adv
-VP -> V NP NP P VP Adv
-VP -> V NP P VP Adv
-VP -> V NP NP P NP P NP Adv
-VP -> V NP NP P VP P NP
-VP -> V NP P NP P VP Adv
-VP -> V NP NP P VP P NP
+VP -> V NP
+VP -> V AdvP
+VP -> V PP
+VP -> VP Conj VP
+PP -> P NP
+AP -> Adj
+AdvP -> Adv
 """
 
 grammar = nltk.CFG.fromstring(NONTERMINALS + TERMINALS)
