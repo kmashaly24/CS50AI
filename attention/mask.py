@@ -51,14 +51,15 @@ def get_mask_token_index(mask_token_id, inputs):
     return None
 
 
-
 def get_color_for_attention_score(attention_score):
     """
     Return a tuple of three integers representing a shade of gray for the
     given `attention_score`. Each value should be in the range [0, 255].
     """
-    gray_value = int((1.0 - attention_score) * 255)
-    return (gray_value, gray_value, gray_value)
+    score = attention_score.numpy().item()
+    color_value = round(score * 255)
+    color_value = max(0, min(255, color_value))
+    return (color_value, color_value, color_value)
 
 
 
