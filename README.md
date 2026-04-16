@@ -61,9 +61,9 @@ Through hands-on projects, i gain exposure to the theory behind graph search alg
 
 ## Certificate
 
-My course completion certificate is included here:
+My course completion certificate:
 
-![CS50AI Certificate](./CS50%20Certificate/CS50AI.png)
+  ![CS50AI Certificate](./CS50%20Certificate/CS50AI.png)
 
 ## Notes
 
