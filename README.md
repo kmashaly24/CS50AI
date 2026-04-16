@@ -62,8 +62,6 @@ CS50's Introduction to Artificial Intelligence with Python explores the concepts
 
 My course completion certificate is included here:
 
-- [`CS50 Certificate/CS50AI.png`](./CS50%20Certificate/CS50AI.png)
-
 ![CS50AI Certificate](./CS50%20Certificate/CS50AI.png)
 
 ## Notes
